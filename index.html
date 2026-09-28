@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Will You Be Mine?</title>
+<meta name="description" content="A little letter, a little poem, and one very important question.">
+<meta name="theme-color" content="#FDFBF7">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Inline favicon so GitHub Pages never logs a 404 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28.5S3.5 20.8 3.5 12.9A6.4 6.4 0 0 1 16 9.6a6.4 6.4 0 0 1 12.5 3.3C28.5 20.8 16 28.5 16 28.5z' fill='%23C49A8A'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23FDFBF7'/%3E%3Cpath d='M16 26S5 19.5 5 12.9A5.6 5.6 0 0 1 16 10a5.6 5.6 0 0 1 11 2.9C27 19.5 16 26 16 26z' fill='%23C49A8A'/%3E%3C/svg%3E">
+
+<!-- Fonts: preconnect → preload → stylesheet -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<script>document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/, 'js');</script>
+
+<style>
+/* ============================================================================
+   1. TOKENS
+   ========================================================================== */
+:root{
+  --ivory:        #FDFBF7;   /* page */
+  --ivory-warm:   #F8F2EA;   /* washes / edges */
+  --charcoal:     #2C2C2C;   /* body text */
+  --charcoal-soft:#5C5450;   /* secondary text */
+  --rose:         #C49A8A;   /* primary accent */
+  --blush:        #D4A3A3;   /* secondary accent */
+  --burgundy:     #3B2027;   /* book cover */
+  --gold:         #C8A97E;   /* foil on the book */
+
+  --font-serif: 'Playfair Display', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+  --font-ui:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  --fade:   1s;    /* cross-fade between screens */
+  --rise:   1.15s; /* text reveal */
+  --gutter: 26px;
+  --measure: 600px;
+}
+
+/* ============================================================================
+   2. RESET & PAGE
+   ========================================================================== */
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{
+  height:100%;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  background:var(--ivory);
+}
+
+body{
+  margin:0;
+  min-height:100%;
+  min-height:100dvh;
+  overflow:hidden;
+  overscroll-behavior:none;
+  background:var(--ivory);
+  color:var(--charcoal);
+  font-family:var(--font-serif);
+  font-size:18px;
+  line-height:1.8;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Soft, cinematic wash behind everything (no images, no repaint cost) */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(212,163,163,0.20), transparent 60%),
+    radial-gradient(90%  70% at 8% 100%,  rgba(196,154,138,0.14), transparent 62%),
+    radial-gradient(90%  70% at 92% 92%,  rgba(196,154,138,0.12), transparent 62%),
+    linear-gradient(180deg, var(--ivory) 0%, var(--ivory-warm) 100%);
+}
+
+img,svg{ display:block; max-width:100%; }
+button{ font:inherit; color:inherit; }
+
+/* Programmatic focus targets must not paint a focus ring, but the screen-reader
+   title on the cover must still exist. */
+[data-focus]:focus{ outline:none; }
+.visually-hidden{
+  position:absolute !important;
+  width:1px; height:1px;
+  margin:-1px; padding:0; border:0;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+
+::selection{ background:rgba(196,154,138,0.30); }
+
+/* ============================================================================
+   3. SCREEN SYSTEM — 4 stacked, cross-faded screens
+   ========================================================================== */
+#stage{ position:relative; z-index:1; height:100vh; height:100dvh; }
+
+.screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  /* NOT justify-content:center — when the content is taller than the screen,
+     flex centering pushes the top of the text above the scroll origin and the
+     browser silently starts the reader halfway down the letter. The .page
+     wrapper uses margin-block:auto instead, which degrades cleanly to 0. */
+  justify-content:flex-start;
+  padding:
+    calc(var(--gutter) + env(safe-area-inset-top))
+    var(--gutter)
+    calc(var(--gutter) + env(safe-area-inset-bottom));
+  max-width:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translate3d(0,0,0);
+  transition:opacity var(--fade) var(--ease), visibility 0s linear var(--fade);
+}
+
+.js .screen.is-active{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transition:opacity var(--fade) var(--ease), visibility 0s linear 0s;
+}
+
+.screen[tabindex="-1"]{ outline:none; }
+
+/* Without JS: stack every screen, show everything, hide the dead controls. */
+.no-js #stage{ height:auto; }
+.no-js .screen{ position:static; opacity:1; visibility:visible; pointer-events:auto; min-height:100vh; }
+.no-js .cover-screen,
+.no-js .book,
+.no-js .btn-continue,
+.no-js .tap-hint,
+.no-js .scroll-cue{ display:none; }
+
+/* ============================================================================
+   4. STAGGERED TEXT REVEAL
+   ========================================================================== */
+.js [data-reveal]{ opacity:0; }
+.js .screen.is-active [data-reveal]{
+  animation:rise var(--rise) var(--ease-soft) both;
+  animation-delay:var(--d, 0s);
+}
+.js .screen.is-active [data-reveal="fade"]{
+  animation-name:rise-fade;
+}
+
+@keyframes rise{
+  from{ opacity:0; transform:translate3d(0,18px,0); }
+  to  { opacity:1; transform:translate3d(0,0,0); }
+}
+@keyframes rise-fade{
+  from{ opacity:0; }
+  to  { opacity:1; }
+}
+
+/* ============================================================================
+   5. SCREEN 1 — THE COVER (leather journal)
+   ========================================================================== */
+.cover-screen{ text-align:center; gap:0; }
+
+.book{
+  position:relative;
+  display:block;
+  width:min(58vw, 200px);
+  min-width:150px;
+  max-width:200px;
+  margin:0 auto;
+  aspect-ratio:0.74;              /* tall, like a real journal */
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transform:perspective(1000px) rotateX(6deg) rotateY(-9deg);
+  transform-style:preserve-3d;
+  transition:transform 0.7s var(--ease), filter 0.7s var(--ease);
+  animation:float 7s var(--ease-soft) infinite;
+}
+.book:focus{ outline:none; }
+.book:focus-visible{ outline:2px solid var(--rose); outline-offset:14px; border-radius:4px; }
+.book:hover{ transform:perspective(1000px) rotateX(4deg) rotateY(-6deg) translateY(-4px); }
+.book:active{ transform:perspective(1000px) rotateX(8deg) rotateY(-11deg) scale(0.985); transition-duration:0.18s; }
+
+@keyframes float{
+  0%,100%{ transform:perspective(1000px) rotateX(6deg) rotateY(-9deg) translateY(0); }
+  50%    { transform:perspective(1000px) rotateX(5deg) rotateY(-7deg) translateY(-9px); }
+}
+
+/* --- the boards (cover) --------------------------------------------------- */
+.book__board{
+  position:absolute;
+  inset:0;
+  border-radius:3px 9px 9px 3px;
+  background:
+    linear-gradient(112deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 34%),
+    linear-gradient(200deg, #4A2A32 0%, var(--burgundy) 46%, #2A151A 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset -14px 0 26px -14px rgba(0,0,0,0.55),
+    0 2px 3px rgba(44,32,36,0.16),
+    0 18px 34px -14px rgba(58,36,42,0.44),
+    0 34px 60px -30px rgba(58,36,42,0.38);
+  overflow:hidden;
+}
+
+/* leather grain */
+.book__board::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:0.5;
+  background-image:
+    repeating-linear-gradient(24deg,  rgba(255,255,255,0.022) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-58deg, rgba(0,0,0,0.030)      0 1px, transparent 1px 4px);
+}
+
+/* spine */
+.book__board::after{
+  content:"";
+  position:absolute;
+  top:0; bottom:0; left:0;
+  width:16px;
+  background:linear-gradient(90deg, rgba(0,0,0,0.44), rgba(0,0,0,0.14) 55%, rgba(255,255,255,0.05));
+  box-shadow:inset -1px 0 0 rgba(255,255,255,0.08);
+}
+
+/* page block peeking out on the right */
+.book__pages{
+  position:absolute;
+  top:5px; bottom:5px; right:-5px;
+  width:12px;
+  border-radius:0 4px 4px 0;
+  background:
+    linear-gradient(90deg, #E8DFD2 0%, #FBF7F0 42%, #EFE7DA 100%);
+  box-shadow:0 1px 2px rgba(44,32,36,0.18);
+}
+.book__pages::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:repeating-linear-gradient(180deg, rgba(120,102,90,0.20) 0 1px, transparent 1px 4px);
+}
+
+/* contact shadow on the table */
+.book__shadow{
+  position:absolute;
+  left:6%; right:2%; bottom:-26px;
+  height:30px;
+  background:radial-gradient(50% 50% at 50% 50%, rgba(58,36,42,0.34), rgba(58,36,42,0) 72%);
+  filter:blur(6px);
+  z-index:-1;
+}
+
+/* --- foil detail on the cover --------------------------------------------- */
+.book__foil{
+  position:absolute;
+  inset:14px 12px 14px 22px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:1px solid rgba(200,169,126,0.42);
+  border-radius:2px 5px 5px 2px;
+  color:var(--gold);
+  text-align:center;
+  box-shadow:inset 0 0 0 1px rgba(200,169,126,0.10);
+  background:linear-gradient(160deg, rgba(200,169,126,0.07), transparent 55%);
+}
+.book__flourish{ width:22px; height:22px; opacity:0.85; }
+.book__flourish path{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.book__label{
+  font-family:var(--font-serif);
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:0.30em;
+  text-indent:0.30em;   /* balance the trailing letter-spacing */
+  text-transform:uppercase;
+  color:rgba(200,169,126,0.95);
+  text-shadow:0 1px 0 rgba(0,0,0,0.35);
+}
+
+/* --- tap hint -------------------------------------------------------------- */
+.tap-hint{
+  margin:38px 0 0;
+  font-family:var(--font-ui);
+  font-size:11px;
+  font-weight:400;
+  letter-spacing:0.28em;
+  text-indent:0.28em;
+  text-transform:uppercase;
+  color:var(--charcoal-soft);
+  opacity:0.62;
+  animation:pulse 3.4s var(--ease-soft) 1.4s infinite;
+}
+@keyframes pulse{
+  0%,100%{ opacity:0.42; }
+  50%    { opacity:0.82; }
+}
+
+/* ============================================================================
+   6. SHARED PAGE TYPE — letter & poem
+   ========================================================================== */
+.page{
+  width:100%;
+  max-width:var(--measure);
+  margin:0;
+  margin-block:auto;   /* centres the page without breaking scrolling */
+  flex:0 0 auto;
+}
+
+.eyebrow{
+  margin:0 0 22px;
+  font-family:var(--font-ui);
+  font-size:10.5px;
+  font-weight:500;
+  letter-spacing:0.34em;
+  text-indent:0.34em;
+  text-transform:uppercase;
+  color:var(--rose);
+  opacity:0.9;
+}
+
+.rule{
+  display:block;
+  width:38px;
+  height:1px;
+  margin:30px auto;
+  background:linear-gradient(90deg, transparent, var(--rose), transparent);
+  opacity:0.55;
+}
+
+/* ============================================================================
+   7. SCREEN 2 — THE LOVE LETTER
+   ========================================================================== */
+.letter-head{
+  margin:0 0 26px;
+  font-family:var(--font-serif);
+  font-size:clamp(26px, 7vw, 34px);
+  font-weight:500;
+  font-style:italic;
+  line-height:1.3;
+  letter-spacing:0.005em;
+  color:var(--charcoal);
+  text-wrap:balance;
+}
+
+.letter-body{
+  font-size:clamp(17px, 4.55vw, 20px);
+  line-height:1.85;
+  color:var(--charcoal);
+  text-align:left;
+  hyphens:none;
+}
+.letter-body p{
+  margin:0 0 1.35em;
+  text-wrap:pretty;
+}
+.letter-body p:last-child{ margin-bottom:0; }
+
+.signature{
+  margin:38px 0 0;
+  font-size:clamp(16px, 4.2vw, 18px);
+  line-height:1.7;
+  color:var(--charcoal-soft);
+  font-style:italic;
+}
+.signature span{
+  display:block;
+  margin-top:6px;
+  font-style:normal;
+  font-family:var(--font-ui);
+  font-size:11px;
+  letter-spacing:0.24em;
+  text-indent:0.24em;
+  text-transform:uppercase;
+  color:var(--rose);
+}
+
+/* ============================================================================
+   8. SCREEN 3 — THE POEM
+   ========================================================================== */
+.poem{
+  text-align:center;
+  font-size:clamp(17px, 4.5vw, 20px);
+  line-height:2.05;
+  color:var(--charcoal);
+}
+.poem .stanza{
+  margin:0;
+  font-style:italic;
+  font-weight:400;
+}
+.poem .stanza + .stanza{ margin-top:1.6em; }
+.poem .line{ display:block; }
+
+.ornament{
+  position:relative;
+  display:block;
+  width:40px;
+  height:1px;
+  margin:34px auto;
+  background:linear-gradient(90deg, transparent, rgba(196,154,138,0.75), transparent);
+}
+.ornament::after{
+  content:"";
+  position:absolute;
+  left:50%; top:50%;
+  width:4px; height:4px;
+  border-radius:1px;
+  background:var(--rose);
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+
+/* ============================================================================
+   9. SCREEN 4 — THE QUESTION
+   ========================================================================== */
+.question-screen{ text-align:center; }
+
+.question-glow{
+  position:absolute;
+  left:50%; top:50%;
+  width:min(120vw, 620px);
+  height:min(120vw, 620px);
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(212,163,163,0.30) 0%, rgba(212,163,163,0.10) 42%, transparent 68%);
+  pointer-events:none;
+  animation:breathe 9s var(--ease-soft) infinite;
+  z-index:0;
+}
+@keyframes breathe{
+  0%,100%{ opacity:0.55; transform:translate(-50%,-50%) scale(0.94); }
+  50%    { opacity:1;    transform:translate(-50%,-50%) scale(1.06); }
+}
+
+.question{
+  position:relative;
+  z-index:1;
+  margin:0;
+  font-family:var(--font-serif);
+  font-size:clamp(32px, 9.2vw, 40px);
+  font-weight:600;
+  line-height:1.28;
+  letter-spacing:0.005em;
+  color:var(--charcoal);
+  text-wrap:balance;
+  text-shadow:0 1px 0 rgba(255,255,255,0.6);
+}
+
+.answer-line{
+  margin:34px 0 0;
+  font-family:var(--font-ui);
+  font-size:10.5px;
+  font-weight:400;
+  letter-spacing:0.32em;
+  text-indent:0.32em;
+  text-transform:uppercase;
+  color:var(--charcoal-soft);
+  opacity:0.42;
+}
+
+/* ============================================================================
+   10. CONTINUE BUTTONS (min 44×44 touch targets)
+   ========================================================================== */
+.btn-continue{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  min-width:48px;
+  margin:40px auto 6px;
+  padding:14px 24px;
+  border:0;
+  background:none;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-appearance:none;
+  appearance:none;
+  font-family:var(--font-ui);
+  font-size:10.5px;
+  font-weight:500;
+  letter-spacing:0.24em;
+  text-indent:0.24em;
+  text-transform:uppercase;
+  color:var(--charcoal-soft);
+  transition:color 0.45s var(--ease), transform 0.25s var(--ease);
+}
+.btn-continue::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:9px;
+  width:24px;
+  height:1px;
+  background:var(--rose);
+  opacity:0.55;
+  transform:translateX(-50%) scaleX(0.7);
+  transition:transform 0.55s var(--ease), opacity 0.55s var(--ease);
+}
+.btn-continue:hover,
+.btn-continue:focus-visible{ color:var(--charcoal); }
+.btn-continue:hover::after,
+.btn-continue:focus-visible::after{ transform:translateX(-50%) scaleX(1.7); opacity:1; }
+.btn-continue:active{ transform:translateY(1px); }
+.btn-continue:focus-visible{ outline:2px solid var(--rose); outline-offset:6px; border-radius:2px; }
+
+/* ============================================================================
+   10b. SCROLL CUE — "there is more below"
+   Lives outside the screens so it never scrolls away with the text, and fades
+   the last line out so the chevron never sits on top of a word.
+   ========================================================================== */
+.scroll-cue{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:calc(86px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  z-index:6;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.7s var(--ease);
+}
+.scroll-cue.is-visible{ opacity:1; }
+
+.scroll-cue__fade{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,
+    rgba(253,251,247,0.99) 0%,
+    rgba(253,251,247,0.92) 38%,
+    rgba(253,251,247,0.55) 70%,
+    rgba(253,251,247,0) 100%);
+}
+
+.scroll-cue__chevron{
+  position:absolute;
+  left:50%;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  width:26px;
+  height:26px;
+  margin-left:-13px;
+}
+.scroll-cue__chevron::before,
+.scroll-cue__chevron::after{
+  content:"";
+  position:absolute;
+  top:9px;
+  width:9px;
+  height:9px;
+  border-right:1px solid var(--rose);
+  border-bottom:1px solid var(--rose);
+  opacity:0.85;
+}
+.scroll-cue__chevron::before{ left:5px;  transform:rotate(45deg); }
+.scroll-cue__chevron::after { right:5px; transform:rotate(-135deg); }
+.scroll-cue.is-visible .scroll-cue__chevron{ animation:bob 2.6s var(--ease-soft) infinite; }
+
+@keyframes bob{
+  0%,100%{ transform:translateY(0); }
+  50%    { transform:translateY(5px); }
+}
+
+/* ============================================================================
+   11. A11Y / MOTION PREFERENCES / SMALL SCREENS
+   ========================================================================== */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .book{ animation:none; }
+  .question-glow{ animation:none; opacity:0.8; }
+  .tap-hint{ animation:none; opacity:0.7; }
+  .scroll-cue.is-visible .scroll-cue__chevron{ animation:none; }
+}
+
+@media (max-height:560px){
+  :root{ --gutter:18px; }
+  .letter-body{ line-height:1.72; }
+  .poem{ line-height:1.9; }
+  .book{ width:min(46vw, 168px); }
+  .tap-hint{ margin-top:30px; }
+}
+
+@media (min-width:768px){
+  :root{ --gutter:40px; }
+}
+</style>
+</head>
+
+<body>
+
+<main id="stage">
+
+  <!-- ==========================================================================
+       SCREEN 1 — THE COVER
+       ========================================================================== -->
+  <section class="screen cover-screen" id="screen-cover" data-screen="0" aria-label="The cover">
+    <div class="page">
+
+      <h1 class="visually-hidden">Will you be mine?</h1>
+
+      <button class="book" id="openBook" type="button" data-goto="1" data-reveal="fade" style="--d:.15s" aria-label="Open the journal">
+        <span class="book__board">
+          <span class="book__foil">
+            <svg class="book__flourish" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 20.2C12 16 12 12.4 12 8.2"/>
+              <path d="M12 15.1C9.9 15.1 8 13.4 7.7 10.8c2.3.1 4.3 1.8 4.3 4.3z"/>
+              <path d="M12 11.9c2.1 0 4-1.7 4.3-4.3-2.3.1-4.3 1.8-4.3 4.3z"/>
+              <path d="M12 8.2c-1.4 0-2.5-1.1-2.6-2.6 1.5-.1 2.6 1 2.6 2.6z"/>
+            </svg>
+            <span class="book__label">For You</span>
+          </span>
+        </span>
+        <span class="book__pages" aria-hidden="true"></span>
+        <span class="book__shadow" aria-hidden="true"></span>
+      </button>
+
+      <p class="tap-hint" data-reveal style="--d:.55s">Tap to open</p>
+
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SCREEN 2 — THE LOVE LETTER
+       ========================================================================== -->
+  <section class="screen" id="screen-letter" data-screen="1" aria-label="A letter for you">
+    <div class="page">
+
+      <p class="eyebrow" data-reveal style="--d:.1s">A letter for you</p>
+
+      <!--
+        ============================================================================
+        ✏️  EDIT ①  —  HER NAME
+        ============================================================================
+        Change ONLY the name between the apostrophes on the next line.
+        Leave the <h2 ...> and </h2> tags exactly as they are.
+      -->
+      <!-- ==================== REPLACE HER NAME HERE ==================== -->
+      <h2 class="letter-head" data-reveal style="--d:.25s" tabindex="-1" data-focus>My Dearest Elena,</h2>
+
+      <!--
+        ============================================================================
+        ✏️  EDIT ②  —  YOUR LETTER
+        ============================================================================
+        Everything between the two marker comments below is the letter.
+        Delete the placeholder paragraphs and paste your own in their place.
+        <p> tags are already styled — line spacing, margins and mobile font size
+        will all take care of themselves. Keep it plain text, no styling needed.
+      -->
+      <!-- ==================== REPLACE LETTER TEXT HERE ==================== -->
+
+      <div class="letter-body" data-reveal style="--d:.45s">
+        <p>
+          I have been trying to find the right words for you since the day we met,
+          and I think that may be the whole problem — there are a hundred right ways
+          to begin, and every single one of them begins with you.
+        </p>
+        <p>
+          You are the sort of person who can make an ordinary Tuesday feel like
+          something worth remembering. You laugh at my terrible jokes, you stay for
+          the serious ones, and somehow you do both without ever once making me
+          feel small. I do not think you have any idea what that does to a person.
+        </p>
+        <p>
+          I have learned that I do not want the loud, enormous moments. I want the
+          quiet ones — the long drives with the windows down, the film we finish
+          even though we hated it, the way you steal the blanket and then pretend
+          you did not. I would like to keep choosing those with you for a very long
+          time.
+        </p>
+        <p>
+          So I wrote you a letter, and then a small poem, and then I built you this
+          quiet little place to read them in. It is not much. But everything I have
+          right now, I would rather hand to you than keep.
+        </p>
+      </div>
+
+      <!-- ==================== END LETTER TEXT ==================== -->
+
+      <!--
+        ============================================================================
+        ✏️  EDIT ③  —  SIGN-OFF (optional)
+        ============================================================================
+        Put your own name in place of the placeholder below.
+      -->
+      <p class="signature" data-reveal style="--d:.7s">
+        With all my heart, always yours,
+        <span>Your Name</span>
+      </p>
+
+      <button class="btn-continue" type="button" data-goto="2" data-reveal style="--d:.95s">
+        Continue to the poem…
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SCREEN 3 — THE POEM
+       ========================================================================== -->
+  <section class="screen" id="screen-poem" data-screen="2" aria-label="A poem for you">
+    <div class="page">
+
+      <!--
+        ============================================================================
+        ✏️  EDIT ④  —  SMALL POEM TITLE (optional — delete the whole <p> to remove)
+      -->
+      <p class="eyebrow" data-reveal style="--d:.1s">And a little poem</p>
+
+      <!--
+        ============================================================================
+        ✏️  EDIT ⑤  —  YOUR POEM
+        ============================================================================
+        Everything between the two marker comments below is the poem.
+        Each <p class="stanza"> is one stanza and <span class="line"> is one line.
+        A stanza = a few <span class="line"> lines. Add or remove freely — the
+        spacing and the centred italic styling are handled for you.
+      -->
+      <!-- ==================== REPLACE POEM TEXT HERE ==================== -->
+
+      <div class="poem" data-reveal style="--d:.35s">
+
+        <p class="stanza">
+          <span class="line">In the quiet hours before the light,</span>
+          <span class="line">I find your name and hold it tight —</span>
+          <span class="line">no crown, no ring, no velvet rope,</span>
+          <span class="line">just this: my stubborn, steady hope.</span>
+        </p>
+
+        <p class="stanza">
+          <span class="line">You turned a stranger into a friend,</span>
+          <span class="line">and then into the sweetest thing.</span>
+          <span class="line">I never went looking for a sign,</span>
+          <span class="line">it turned out you were mine.</span>
+        </p>
+
+        <p class="stanza">
+          <span class="line">I promise you the ordinary days:</span>
+          <span class="line">the same old road, a different phase.</span>
+          <span class="line">The same old song, but sung by two</span>
+          <span class="line">will never sound the way it used to.</span>
+        </p>
+
+        <p class="stanza">
+          <span class="line">If I could build a house from words,</span>
+          <span class="line">it would have its windows wide,</span>
+          <span class="line">a door that never locks for you,</span>
+          <span class="line">and one small light left on inside.</span>
+        </p>
+
+        <p class="stanza">
+          <span class="line">So here it is — my whole, small heart,</span>
+          <span class="line">beating like a bell that starts.</span>
+          <span class="line">Take my hand. Take my quiet years.</span>
+          <span class="line">Answer me with one word: yes.</span>
+        </p>
+
+      </div>
+
+      <!-- ==================== END POEM TEXT ==================== -->
+
+      <span class="ornament" data-reveal="fade" style="--d:.6s" aria-hidden="true"></span>
+
+      <button class="btn-continue" type="button" data-goto="3" data-reveal style="--d:.75s">
+        One last thing…
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       SCREEN 4 — THE QUESTION
+       No buttons. No links. It stays here.
+       ========================================================================== -->
+  <section class="screen question-screen" id="screen-question" data-screen="3" aria-label="The question">
+    <div class="question-glow" aria-hidden="true"></div>
+
+    <div class="page">
+      <h2 class="question" data-reveal style="--d:.2s" tabindex="-1" data-focus>Will you be mine?</h2>
+
+      <!-- Optional tiny line. Delete this whole <p> if you want her to see nothing but the question. -->
+      <p class="answer-line" data-reveal style="--d:1.1s">Take your time</p>
+    </div>
+  </section>
+
+  <!-- Gentle "there is more below" cue. Lives outside the screens so it never
+       scrolls away with the text. Hidden by JS unless the visible screen
+       actually has more to read. -->
+  <div class="scroll-cue" id="scrollCue" aria-hidden="true">
+    <span class="scroll-cue__fade"></span>
+    <span class="scroll-cue__chevron"></span>
+  </div>
+
+</main>
+
+<noscript>
+  <style>
+    .book, .btn-continue, .tap-hint, .scroll-cue{ display:none; }
+    .question-glow{ animation:none; }
+  </style>
+</noscript>
+
+<script>
+(function () {
+  'use strict';
+
+  var screens = Array.prototype.slice.call(document.querySelectorAll('.screen'));
+  var doc = document;
+  var scrollCue = doc.getElementById('scrollCue');
+
+  if (!screens.length) { return; }
+
+  var current = -1;      // nothing is showing yet
+  var FADE = 900;        // ms — keep in sync with --fade in the CSS
+
+  /* ---------------------------------------------------------------- helpers */
+
+  function nameOf(screen) {
+    return screen.id.replace(/^screen-/, '');
+  }
+
+  function indexFromHash() {
+    var id = (window.location.hash || '').replace(/^#/, '');
+    for (var i = 0; i < screens.length; i++) {
+      if (nameOf(screens[i]) === id) { return i; }
+    }
+    return 0;
+  }
+
+  /* Only show the "more below" cue while there is genuinely more to read. */
+  function updateScrollHint() {
+    if (!scrollCue) { return; }
+    var screen = current >= 0 ? screens[current] : null;
+    if (!screen) { scrollCue.classList.remove('is-visible'); return; }
+    var remaining = screen.scrollHeight - screen.clientHeight - screen.scrollTop;
+    scrollCue.classList.toggle('is-visible', remaining > 32);
+  }
+
+  function park(screen) {
+    screen.classList.remove('is-active');
+    screen.setAttribute('aria-hidden', 'true');
+    screen.setAttribute('inert', '');
+    screen.scrollTop = 0;
+    if (scrollCue) { scrollCue.classList.remove('is-visible'); }
+  }
+
+  /* -------------------------------------------------------------- navigation */
+
+  function show(index, opts) {
+    opts = opts || {};
+    if (index < 0 || index >= screens.length) { return; }
+    if (index === current) { return; }
+
+    var next = screens[index];
+    var prev = current >= 0 ? screens[current] : null;
+
+    if (prev && prev !== next) { park(prev); }
+
+    next.classList.add('is-active');
+    next.removeAttribute('aria-hidden');
+    next.removeAttribute('inert');
+    next.scrollTop = 0;
+
+    current = index;
+
+    if (opts.push) {
+      try {
+        window.history.pushState({ screen: index }, '', '#' + nameOf(next));
+      } catch (e) { /* history unavailable — harmless */ }
+    }
+
+    if (opts.focus) {
+      var target = next.querySelector('[data-focus]') || next;
+      if (!target.hasAttribute('tabindex')) { target.setAttribute('tabindex', '-1'); }
+      try {
+        target.focus({ preventScroll: true });
+      } catch (e) {
+        target.focus();
+      }
+    }
+
+    updateScrollHint();
+    // re-check once the reveal animation has settled
+    window.setTimeout(updateScrollHint, FADE + 150);
+  }
+
+  /* ------------------------------------------------------------------- wiring */
+
+  // Any element with data-goto="<screen index>" navigates.
+  doc.addEventListener('click', function (event) {
+    var trigger = event.target.closest ? event.target.closest('[data-goto]') : null;
+    if (!trigger) { return; }
+    event.preventDefault();
+    show(parseInt(trigger.getAttribute('data-goto'), 10) || 0, { push: true, focus: true });
+  });
+
+  // Hardware/browser back button walks the journey backwards instead of exiting.
+  window.addEventListener('popstate', function () {
+    show(indexFromHash(), { focus: true });
+  });
+
+  // Keep the "more below" cue honest while she scrolls. Scroll events do not
+  // bubble, so listen in the capture phase.
+  doc.addEventListener('scroll', function (e) {
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('screen')) { updateScrollHint(); }
+  }, true);
+
+  window.addEventListener('resize', updateScrollHint);
+  window.addEventListener('orientationchange', function () {
+    window.setTimeout(updateScrollHint, 250);
+  });
+
+  /* -------------------------------------------------------------------- start */
+
+  function start() {
+    var initial = indexFromHash();
+    show(initial, { focus: false });
+    if (initial === 0) {
+      // Make the cover reachable for screen readers & keyboard users.
+      try {
+        if (window.location.hash) {
+          window.history.replaceState({ screen: 0 }, '', '#cover');
+        }
+      } catch (e) { /* noop */ }
+    }
+  }
+
+  if (doc.readyState === 'loading') {
+    doc.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>
+
+</body>
+</html>
